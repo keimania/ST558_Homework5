@@ -1,0 +1,251 @@
+---
+title: "ST558 Homework5"
+format: html
+editor: visual
+---
+
+# ST558, Jamin Goo (NCSU id : jgoo)
+
+# Homework5
+
+## Task 1: Read in the Data and Modify
+
+1.  First, modify the code provided with the download to read in the data from a local file source (your downloaded .csv files) and combine the two data frames.
+
+```{r}
+math_df=read.table("data/student-mat.csv",sep=";",header=TRUE)
+por_df=read.table("data/student-por.csv",sep=";",header=TRUE)
+
+combined_df=merge(math_df,por_df,by=c("school","sex","age","address","famsize","Pstatus","Medu","Fedu","Mjob","Fjob","reason","nursery","internet"))
+print(nrow(math_df))
+print(nrow(por_df))
+print(nrow(combined_df)) # 382 students
+```
+
+2.  Second, read in and combine the data using functions from the tidyverse. Use an inner_join() on the variables they used in their code.
+
+```{r}
+library(tidyverse)
+
+math_tibble = read_delim("data/student-mat.csv", delim = ";")
+por_tibble = read_delim("data/student-por.csv", delim = ";")
+join_cols <- c("school","sex","age","address","famsize","Pstatus","Medu","Fedu","Mjob","Fjob","reason","nursery","internet")
+
+combined_tibble <- inner_join(math_tibble, por_tibble, by = join_cols)
+
+print(nrow(math_tibble))
+print(nrow(por_tibble))
+print(nrow(combined_tibble)) # 382 students
+```
+
+Note on the issue : This message means that the columns used for joining do not uniquely identify each student, causing some rows in the math data to match multiple rows in the Portuguese data.
+
+::: callout-warning
+Warning in inner_join(math_tibble, por_tibble, by = join_cols) : Detected an unexpected many-to-many relationship between `x` and `y`. ℹ Row 79 of `x` matches multiple rows in `y`. ℹ Row 79 of `y` matches multiple rows in `x`. ℹ If a many-to-many relationship is expected, set `relationship = "many-to-many"` to silence this warning.
+:::
+
+3.  Use an inner_join() on all variables other than G1, G2, G3, paid, and absences.
+
+```{r}
+all_cols <- names(math_tibble)
+join_cols <- setdiff(all_cols, c("G1", "G2", "G3", "paid", "absences"))
+
+combined_tibble <- inner_join(math_tibble, por_tibble, by = join_cols)
+
+print(nrow(math_tibble))
+print(nrow(por_tibble))
+print(nrow(combined_tibble)) # 382 students
+```
+
+4.  Next, for the math data, Portuguese, and combined data, choose four categorical variables you are interested in and convert those into factor variables in each tibble (use the same four variables in each).
+
+```{r}
+factor_vars <- c("sex", "address", "reason", "guardian")
+
+combined_tibble <- combined_tibble %>%
+  mutate(across(all_of(factor_vars), as.factor))
+
+str(select(combined_tibble, all_of(factor_vars)))
+```
+
+## Task 2: Summarize the Data
+
+1.  Do the rest of these items on the combined data:
+
+-   Look at how the data is stored and see if everything makes sense.
+-   Document the missing values in the data.
+
+```{r}
+summary(combined_tibble)
+sum(is.na(combined_tibble))
+
+```
+
+### Categorical variables
+
+-   Create a one-way contingency table, a two-way contingency table, and a three-way contingency table for some of the factor variables you created previously. Use table() to accomplish this.
+
+```{r}
+one_way_table <- table(combined_tibble$sex)
+print("One-way contingency")
+one_way_table
+
+two_way_table <- table(combined_tibble$sex, combined_tibble$address)
+print("Two-way contingency")
+two_way_table
+
+three_way_table <- table(combined_tibble$sex, combined_tibble$address, combined_tibble$reason)
+print("Three-way contingency")
+three_way_table
+```
+
+::: callout-note
+Interpretation:
+
+1.  One-way Contingency
+
+-   Selected number : 174
+-   There are 174 female students in this dataset.
+
+2.  Two-way Contingency
+
+-   Selected number : 35
+-   35 students are female and live in a rural area.
+
+3.  Three-way Contingency
+
+-   Selected number : 15
+-   There are 15 students who are female, live in a rural area, and whose reason for choosing the school is "reputation".
+:::
+
+-   Create a conditional two-way table using table().
+
+```{r}
+# Once, by subsetting the data (say with filter()) and then creating the two-way table
+reputation_students <- combined_tibble %>% filter(reason == 'reputation')
+table(reputation_students$sex, reputation_students$address)
+# Once, by creating a three-way table and subsetting it
+three_way_table[,,"reputation"]
+```
+
+-   Create a two-way contingency table using group_by() and summarize() from dplyr.
+
+```{r}
+combined_tibble |>
+  drop_na(sex, address) |>
+  group_by(sex, address) |>
+  summarize(count = n()) |>
+  pivot_wider(names_from = address, values_from = count)
+```
+
+-   Create a stacked bar graph and a side-by-side bar graph.
+
+```{r}
+ggplot(combined_tibble, aes(x = reason, fill = sex)) +
+  geom_bar(position = "stack")
+
+ggplot(combined_tibble, aes(x = reason, fill = sex)) +
+  geom_bar(position = "dodge")
+
+```
+
+### Numeric variables (and across groups)
+
+-   Find measures of center and spread for three of these variables (including at least one G3 variable)
+
+```{r}
+combined_tibble |>
+  summarize(mean_age = mean(age), median_age = median(age), sd_age = sd(age), iqr_age = IQR(age),
+                       mean_abs = mean(absences.x), median_abs = median(absences.x), sd_abs = sd(absences.x), iqr_abs = IQR(absences.x),
+                       mean_g3 = mean(G3.x), median_g3 = median(G3.x), sd_g3 = sd(G3.x), iqr_g3 = IQR(G3.x))
+
+# Repeat while subsetting the data in a meaningful way. : SEX(Female)
+combined_tibble |>
+  filter(sex == "F") |>
+summarize(mean_age = mean(age), median_age = median(age), sd_age = sd(age), iqr_age = IQR(age),
+                       mean_abs = mean(absences.x), median_abs = median(absences.x), sd_abs = sd(absences.x), iqr_abs = IQR(absences.x),
+                       mean_g3 = mean(G3.x), median_g3 = median(G3.x), sd_g3 = sd(G3.x), iqr_g3 = IQR(G3.x))
+```
+
+-   Find measures of center and spread across a single grouping variable for three of these variables
+
+```{r}
+combined_tibble |>
+  group_by(sex) |>
+summarize(mean_age = mean(age), median_age = median(age), sd_age = sd(age), iqr_age = IQR(age),
+                       mean_abs = mean(absences.x), median_abs = median(absences.x), sd_abs = sd(absences.x), iqr_abs = IQR(absences.x),
+                       mean_g3 = mean(G3.x), median_g3 = median(G3.x), sd_g3 = sd(G3.x), iqr_g3 = IQR(G3.x))
+```
+
+-   Find measures of center and spread across two grouping variables for three of these variables
+
+```{r}
+combined_tibble |>
+  group_by(sex, address) |>
+summarize(mean_age = mean(age), median_age = median(age), sd_age = sd(age), iqr_age = IQR(age),
+                       mean_abs = mean(absences.x), median_abs = median(absences.x), sd_abs = sd(absences.x), iqr_abs = IQR(absences.x),
+                       mean_g3 = mean(G3.x), median_g3 = median(G3.x), sd_g3 = sd(G3.x), iqr_g3 = IQR(G3.x))
+```
+
+-   Create a correlation matrix between all of the numeric variables
+
+```{r}
+combined_tibble |>
+  select(where(is.numeric)) |>
+  cor()
+```
+
+-   Create a histogram, kernel density plot, and boxplot for two of the numeric variables across one of the categorical variables.
+
+```{r}
+ggplot(combined_tibble  |> drop_na(G3.x, sex),
+       aes(x = G3.x, fill = sex)) +
+  geom_histogram(position = "identity", alpha = 0.5, binwidth = 1) +
+  labs(title = "Histogram of Math G3 by Sex")
+
+ggplot(combined_tibble |> drop_na(G3.x, sex),
+       aes(x = G3.x, fill = sex)) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Density Plot of Math G3 by Sex")
+
+ggplot(combined_tibble |> drop_na(G3.x, sex),
+       aes(x = sex, y = G3.x)) +
+  geom_boxplot() +
+  labs(title = "Boxplot of Math G3 by Sex")
+
+```
+
+-   Create two scatterplots relating a G3 variable to other numeric variables (put G3 on the y-axis).
+
+```{r}
+ggplot(combined_tibble  |> drop_na(G1.x, G3.x, sex),
+       aes(x = G1.x, y = G3.x, color = sex)) +
+  geom_point(position = "jitter") +
+  labs(title = "Scatter of Math G3 vs G1, Colored by Sex")
+
+ggplot(combined_tibble |> drop_na(G1.x, G3.x, sex),
+       aes(x = absences.x, y = G3.x, color = sex)) +
+  geom_point(position = "jitter") +
+  labs(title = "Scatter of Math G3 vs Absences, Colored by Sex")
+
+```
+
+-   Repeat the scatter plot step but use faceting to obtain graphs at each setting of another categorical variable.
+
+```{r}
+ggplot(combined_tibble  |> drop_na(G1.x, G3.x, sex), aes(x = G1.x, y = G3.x, color = sex)) + 
+  geom_point() + 
+  labs(x = "G1", y = "G3") +
+  facet_wrap(~ address)
+```
+
+-   Repeat the scatter plot step but use faceting to obtain graphs at each combination of two categorical variables.
+
+```{r}
+ggplot(combined_tibble |> drop_na(G1.x, G3.x, sex, address, higher),
+       aes(x = G1.x, y = G3.x, color = sex)) + 
+  geom_point() +
+  labs(x = "G1", y = "G3") + 
+  scale_color_discrete("Sex") +
+  facet_grid(address ~ higher)
+```
