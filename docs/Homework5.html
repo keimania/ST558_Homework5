@@ -742,13 +742,26 @@ G3.y        0.475956497 -0.071452010  0.82541432  0.89430982  1.000000000</code>
 </div>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>All three plots show that the distribution of final math grades is very similar for male and female students but the median grade for male students is slightly higher than for female students.</p>
+</div>
+</div>
 <ul>
 <li>Create two scatterplots relating a G3 variable to other numeric variables (put G3 on the y-axis).</li>
 </ul>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(combined_tibble  <span class="sc">|&gt;</span> <span class="fu">drop_na</span>(G1.x, G3.x, sex),</span>
 <span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> G1.x, <span class="at">y =</span> G3.x, <span class="at">color =</span> sex)) <span class="sc">+</span></span>
-<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">position =</span> <span class="st">"jitter"</span>) <span class="sc">+</span></span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
 <span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Scatter of Math G3 vs G1, Colored by Sex"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
@@ -759,7 +772,7 @@ G3.y        0.475956497 -0.071452010  0.82541432  0.89430982  1.000000000</code>
 </div>
 <div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(combined_tibble <span class="sc">|&gt;</span> <span class="fu">drop_na</span>(G1.x, G3.x, sex),</span>
 <span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> absences.x, <span class="at">y =</span> G3.x, <span class="at">color =</span> sex)) <span class="sc">+</span></span>
-<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">position =</span> <span class="st">"jitter"</span>) <span class="sc">+</span></span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
 <span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Scatter of Math G3 vs Absences, Colored by Sex"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
@@ -767,6 +780,19 @@ G3.y        0.475956497 -0.071452010  0.82541432  0.89430982  1.000000000</code>
 <p><img src="Homework5_files/figure-html/unnamed-chunk-15-2.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The first scatterplot shows a strong, positive, linear relationship between the first-period (G1.x) and final (G3.x) math grades. The second plot shows no clear relationship between absences and final grades.</p>
 </div>
 </div>
 <ul>
@@ -801,6 +827,19 @@ G3.y        0.475956497 -0.071452010  0.82541432  0.89430982  1.000000000</code>
 <p><img src="Homework5_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>These plots confirm that the strong, positive relationship between G1.x and G3.x is consistent across all subgroups. It holds true for both urban and rural students, as well as for students who do or do not wish to pursue higher education.</p>
 </div>
 </div>
 

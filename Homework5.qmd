@@ -215,20 +215,29 @@ ggplot(combined_tibble |> drop_na(G3.x, sex),
 
 ```
 
+::: callout-note
+All three plots show that the distribution of final math grades is very similar for male and female students but the median grade for male students is slightly higher than for female students.
+:::
+
 -   Create two scatterplots relating a G3 variable to other numeric variables (put G3 on the y-axis).
 
 ```{r}
 ggplot(combined_tibble  |> drop_na(G1.x, G3.x, sex),
        aes(x = G1.x, y = G3.x, color = sex)) +
-  geom_point(position = "jitter") +
+  geom_point() +
   labs(title = "Scatter of Math G3 vs G1, Colored by Sex")
 
 ggplot(combined_tibble |> drop_na(G1.x, G3.x, sex),
        aes(x = absences.x, y = G3.x, color = sex)) +
-  geom_point(position = "jitter") +
+  geom_point() +
   labs(title = "Scatter of Math G3 vs Absences, Colored by Sex")
 
 ```
+
+::: callout-note
+The first scatterplot shows a strong, positive, linear relationship between the first-period (G1.x) and final (G3.x) math grades.
+The second plot shows no clear relationship between absences and final grades.
+:::
 
 -   Repeat the scatter plot step but use faceting to obtain graphs at each setting of another categorical variable.
 
@@ -249,3 +258,7 @@ ggplot(combined_tibble |> drop_na(G1.x, G3.x, sex, address, higher),
   scale_color_discrete("Sex") +
   facet_grid(address ~ higher)
 ```
+
+::: callout-note
+These plots confirm that the strong, positive relationship between G1.x and G3.x is consistent across all subgroups. It holds true for both urban and rural students, as well as for students who do or do not wish to pursue higher education.
+:::
